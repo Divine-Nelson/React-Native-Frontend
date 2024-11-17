@@ -13,33 +13,46 @@ import { passwordValidator } from '../helper/passwordValidator'
 import { nameValidator } from '../helper/nameValidator'
 
 export default function SignupScreen({ navigation }) {
-  const [name, setName] = useState({ value: '', error: '' })
+  const [firstName, setFirstName] = useState({ value: '', error: '' })
+  const [lastName, setLastName] = useState({ value: '', error: '' })
+  const [username, setUsername] = useState({ value: '', error: '' })
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
+  const [retypePassword, setRetypePassword] = useState({ value: '', error: '' })
 
   const onSignUpPressed = async () => {
-    const nameError = nameValidator(name.value)
+    const firstNameError = nameValidator(firstName.value)
+    const lastNameError = nameValidator(lastName.value)
+    const usernameError = username.value ? '' : 'Username cannot be empty'
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
+    const retypePasswordError =
+      password.value !== retypePassword.value ? 'Passwords do not match' : ''
 
-    if (emailError || passwordError || nameError) {
-      setName({ ...name, error: nameError })
+    if (firstNameError || lastNameError || usernameError || emailError || passwordError || retypePasswordError) {
+      setFirstName({ ...firstName, error: firstNameError })
+      setLastName({ ...lastName, error: lastNameError })
+      setUsername({ ...username, error: usernameError })
       setEmail({ ...email, error: emailError })
       setPassword({ ...password, error: passwordError })
+      setRetypePassword({ ...retypePassword, error: retypePasswordError })
       return
     }
 
     try {
-      const response = await fetch('http://192.168.0.70:8000/api/signup/', {
+      const response = await fetch('http://192.168.0.75:8000/api/signup/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
         body: JSON.stringify({
-          Name: name.value,
-          Email: email.value,
-          Password: password.value,
+          first_name: firstName.value, // Updated to match backend
+          last_name: lastName.value, // Updated to match backend
+          username: username.value,
+          email: email.value,
+          password1: password.value,
+          password2: retypePassword.value,
         }),
       })
 
@@ -50,8 +63,19 @@ export default function SignupScreen({ navigation }) {
           routes: [{ name: 'LoginScreen' }],
         })
       } else {
-        const errorData = await response.json()
-        Alert.alert('Error', errorData.error || 'Failed to create account')
+        const errorText = await response.text() // Fallback to plain text
+        let errorMessage
+
+        try {
+          const errorData = JSON.parse(errorText) // Attempt to parse JSON
+          errorMessage = Object.entries(errorData)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join('\n')
+        } catch {
+          errorMessage = errorText // Use raw text if not JSON
+        }
+
+        Alert.alert('Error', errorMessage || 'Failed to create account')
       }
     } catch (error) {
       Alert.alert('Error', 'An error occurred. Please try again.')
@@ -65,12 +89,29 @@ export default function SignupScreen({ navigation }) {
       <Logo />
       <Header>Create Account</Header>
       <TextInput
-        label="Name"
+        label="First Name"
         returnKeyType="next"
-        value={name.value}
-        onChangeText={(text) => setName({ value: text, error: '' })}
-        error={!!name.error}
-        errorText={name.error}
+        value={firstName.value}
+        onChangeText={(text) => setFirstName({ value: text, error: '' })}
+        error={!!firstName.error}
+        errorText={firstName.error}
+      />
+      <TextInput
+        label="Last Name"
+        returnKeyType="next"
+        value={lastName.value}
+        onChangeText={(text) => setLastName({ value: text, error: '' })}
+        error={!!lastName.error}
+        errorText={lastName.error}
+      />
+      <TextInput
+        label="Username"
+        returnKeyType="next"
+        value={username.value}
+        onChangeText={(text) => setUsername({ value: text, error: '' })}
+        error={!!username.error}
+        errorText={username.error}
+        autoCapitalize="none"
       />
       <TextInput
         label="Email"
@@ -86,18 +127,27 @@ export default function SignupScreen({ navigation }) {
       />
       <TextInput
         label="Password"
-        returnKeyType="done"
+        returnKeyType="next"
         value={password.value}
         onChangeText={(text) => setPassword({ value: text, error: '' })}
         error={!!password.error}
         errorText={password.error}
         secureTextEntry
+        autoCompleteType="off"
+        textContentType="none"
       />
-      <Button
-        mode="contained"
-        onPress={onSignUpPressed}
-        style={{ marginTop: 24 }}
-      >
+      <TextInput
+        label="Re-type Password"
+        returnKeyType="done"
+        value={retypePassword.value}
+        onChangeText={(text) => setRetypePassword({ value: text, error: '' })}
+        error={!!retypePassword.error}
+        errorText={retypePassword.error}
+        secureTextEntry
+        autoCompleteType="off"
+        textContentType="none"
+      />
+      <Button mode="contained" onPress={onSignUpPressed} style={{ marginTop: 24 }}>
         Sign Up
       </Button>
       <View style={styles.row}>

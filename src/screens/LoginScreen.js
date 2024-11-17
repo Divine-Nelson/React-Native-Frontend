@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react'
 import { TouchableOpacity, StyleSheet, View } from 'react-native'
 import { Text } from 'react-native-paper'
@@ -25,7 +26,7 @@ export default function LoginScreen({ navigation }) {
     }
     navigation.reset({
       index: 0,
-      routes: [{ name: 'Dashboard' }],
+      routes: [{ name: 'DashboardScreen' }],
     })
   }
 
