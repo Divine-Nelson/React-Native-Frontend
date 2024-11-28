@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react'
-import { TouchableOpacity, StyleSheet, View } from 'react-native'
+import { TouchableOpacity, StyleSheet, View, Alert } from 'react-native'
 import { Text } from 'react-native-paper'
 import Background from '../componets/Background'
 import Logo from '../componets/Logo'
@@ -9,26 +9,54 @@ import Button from '../componets/Button'
 import TextInput from '../componets/TextInput'
 import BackButton from '../componets/BackButton'
 import { theme } from '../core/theme'
-import { emailValidator } from '../helper/emailValidator'
+import { identifierValidator } from '../helper/identifierValidator'
 import { passwordValidator } from '../helper/passwordValidator'
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState({ value: '', error: '' })
-  const [password, setPassword] = useState({ value: '', error: '' })
+  const [identifier, setIdentifier] = useState({ value: '', error: '' });
+  const [password, setPassword] = useState({ value: '', error: '' });
 
-  const onLoginPressed = () => {
-    const emailError = emailValidator(email.value)
-    const passwordError = passwordValidator(password.value)
-    if (emailError || passwordError) {
-      setEmail({ ...email, error: emailError })
-      setPassword({ ...password, error: passwordError })
-      return
+  const onLoginPressed = async () => {
+    console.log('Login button pressed'); // Debug log to ensure button works
+
+    const identifierError = identifierValidator(identifier.value);
+    const passwordError = passwordValidator(password.value);
+
+    if (identifierError || passwordError) {
+      setIdentifier({ ...identifier, error: identifierError });
+      setPassword({ ...password, error: passwordError });
+      return;
     }
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'DashboardScreen' }],
-    })
-  }
+
+    try {
+      const response = await fetch('http://192.168.0.25:8000/api/login/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          identifier: identifier.value, // Pass identifier (username or email)
+          password: password.value,
+        }),
+      });
+
+      if (response.ok) {
+        Alert.alert('Welcome Back!');
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'DashboardScreen' }],
+        });
+      } else {
+        const errorData = await response.json();
+        console.log('Error: ', errorData);
+        Alert.alert('Error', errorData.error || 'Login failed');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'An error occurred. Please try again.');
+      console.error('Fetch error:', error);
+    }
+  };
 
   return (
     <Background>
@@ -36,16 +64,16 @@ export default function LoginScreen({ navigation }) {
       <Logo />
       <Header>Welcome back.</Header>
       <TextInput
-        label="Email"
+        label="Email or Username"
         returnKeyType="next"
-        value={email.value}
-        onChangeText={(text) => setEmail({ value: text, error: '' })}
-        error={!!email.error}
-        errorText={email.error}
+        value={identifier.value}
+        onChangeText={(text) => setIdentifier({ value: text, error: '' })}
+        error={!!identifier.error}
+        errorText={identifier.error}
         autoCapitalize="none"
-        autoCompleteType="email"
-        textContentType="emailAddress"
-        keyboardType="email-address"
+        autoCompleteType="username"
+        textContentType="username"
+        keyboardType="default"
       />
       <TextInput
         label="Password"
@@ -57,9 +85,7 @@ export default function LoginScreen({ navigation }) {
         secureTextEntry
       />
       <View style={styles.forgotPassword}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('ResetScreen')}
-        >
+        <TouchableOpacity onPress={() => navigation.navigate('ResetScreen')}>
           <Text style={styles.forgot}>Forgot your password?</Text>
         </TouchableOpacity>
       </View>
@@ -73,7 +99,7 @@ export default function LoginScreen({ navigation }) {
         </TouchableOpacity>
       </View>
     </Background>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -98,4 +124,4 @@ const styles = StyleSheet.create({
   down: {
     color: theme.colors.text,
   },
-})
+});

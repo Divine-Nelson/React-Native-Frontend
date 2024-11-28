@@ -13,14 +13,34 @@ import { theme } from '../core/theme'
 export default function ResetScreen({ navigation }) {
     const [email, setEmail] = useState({ value: '', error: '' })
   
-    const sendResetPasswordEmail = () => {
-      const emailError = emailValidator(email.value)
+    const sendResetPasswordEmail = async () => {
+      const emailError = emailValidator(email.value);
       if (emailError) {
-        setEmail({ ...email, error: emailError })
-        return
+          setEmail({ ...email, error: emailError });
+          return;
       }
-      navigation.navigate('LoginScreen')
+  
+      try {
+        const response = await fetch('http://192.168.0.25:8000/api/reset_password/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email.value }),
+        });
+    
+        if (response.ok) {
+            alert('Check your email for reset instructions!');
+            navigation.navigate('LoginScreen');
+        } else {
+            const errorData = await response.json();
+            console.error('Error response:', errorData);
+            alert(errorData.error || 'Something went wrong!');
+        }
+    } catch (err) {
+        console.error('Network error:', err);
+        alert('Network error. Please try again later.');
     }
+    
+  };
   
     return (
       <Background>
