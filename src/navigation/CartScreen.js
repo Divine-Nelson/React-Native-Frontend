@@ -12,7 +12,7 @@ import { ScreenWidth } from '../core/constant';
 import { CartContext } from '../utils/context';
 import { storeData } from '../utils/storage';
 import AlertModal from '../componets/Modals/AlertModal';
-import {initiatePayment} from '../services/payment';
+//import {initiatePayment} from '../services/payment';
 
 
 export default function CartScreen () {

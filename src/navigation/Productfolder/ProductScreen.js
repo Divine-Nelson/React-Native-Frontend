@@ -19,7 +19,7 @@ import { AUTH_TOKEN_KEY } from "../../core/constant";
 import { productData } from "../../data/index";
 import { colors } from "../../core/theme";
 
-const categories = ["Deals", "Dumbbells", "Mats", "Bands", "Rollers"];
+const categories = ["Deals", "Massage Gun", "Mats", "Bands", "Rollers"];
 
 export default function Product() {
   const navigation = useNavigation();

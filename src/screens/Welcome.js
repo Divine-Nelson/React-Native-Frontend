@@ -3,7 +3,7 @@ import { View, Image, StyleSheet } from "react-native";
 import StyledText from "../componets/Texts/StyledText";
 import StyledButton from "../componets/button/StyledButton";
 import { onboardingData } from "../core/data";
-import { color } from "../core/theme";
+import { colors } from "../core/theme";
 import {ScreenWidth} from "../core/constant";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import { HeaderHeightContext } from "@react-navigation/elements";
@@ -65,7 +65,7 @@ const Welcome = ({route}) =>{
                                 <MaterialCommunityIcons 
                                 name="checkbox-blank-circle" 
                                 size ={15} 
-                                color={color.accent + "cc"} 
+                                color={colors.accent + "cc"} 
                                 key={Item.id}
                             />
                             );
@@ -73,7 +73,7 @@ const Welcome = ({route}) =>{
                         return (
                             <MaterialCommunityIcons name="checkbox-blank-circle-outline" 
                             size ={15} 
-                            color={color.tertiary + "33"} 
+                            color={colors.tertiary + "33"} 
                             key={Item.id}
                         />
                         );
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'space-around',
-        backgroundColor: color.primary,
+        backgroundColor: colors.primary,
         paddingHorizontal: 35
     },
 
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     },
     summary: {
         textAlign: "center",
-        color: color.tertiary,
+        color: colors.tertiary,
         fontWeight: 'bold',
     },
     bottomContent:{
