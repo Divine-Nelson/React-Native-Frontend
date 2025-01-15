@@ -3,12 +3,26 @@ import {Dimensions} from 'react-native';
 
 const {width, height} = Dimensions.get('window');
 
-export const colors = {
+export const color = {
   primary: '#070f18',
   gray: '#8b8989',
   lightGray: '#b2b2b2',
   light: '#fbfbfb',
   white: '#fff',
+  black: '#000',
+  button: "#50C878",
+};
+
+export const colors ={
+  primary: "#f9fafb",
+  secondary: "#f3f4f6",
+  tertiary: "#6b7280",
+  accent: "#881337",
+  tint: "#374151",
+  highlight: "#881337" + "10",
+  placeholder: "#9ca3af",
+  amber: "#f59e0b",
+  green: "#16a34a",
   black: '#000',
 };
 
@@ -62,3 +76,4 @@ export const theme = {
     background: '#000000',
   },
 }
+/////////

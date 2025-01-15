@@ -1,7 +1,7 @@
-import React from 'react'
-import { View, StyleSheet, Text } from 'react-native'
-import { TextInput as Input } from 'react-native-paper'
-import { theme } from '../core/theme'
+import React from "react";
+import { View, StyleSheet, Text } from "react-native";
+import { TextInput as Input } from "react-native-paper";
+import { theme } from "../core/theme";
 
 export default function TextInput({ errorText, description, ...props }) {
   return (
@@ -11,6 +11,8 @@ export default function TextInput({ errorText, description, ...props }) {
         selectionColor={theme.colors.primary}
         underlineColor="transparent"
         mode="outlined"
+        keyboardType="default" // Ensure default or appropriate keyboard type
+        returnKeyType="done" // Customize for form submissions
         {...props}
       />
       {description && !errorText ? (
@@ -18,12 +20,12 @@ export default function TextInput({ errorText, description, ...props }) {
       ) : null}
       {errorText ? <Text style={styles.error}>{errorText}</Text> : null}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    width: "100%",
     marginVertical: 12,
   },
   input: {
@@ -39,4 +41,4 @@ const styles = StyleSheet.create({
     color: theme.colors.error,
     paddingTop: 8,
   },
-})
+});

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react'
 import { TouchableOpacity, StyleSheet, View, Alert } from 'react-native'
 import { Text } from 'react-native-paper'
@@ -11,53 +10,75 @@ import BackButton from '../componets/BackButton'
 import { theme } from '../core/theme'
 import { identifierValidator } from '../helper/identifierValidator'
 import { passwordValidator } from '../helper/passwordValidator'
+import AsyncStorage from "@react-native-async-storage/async-storage"; 
+import { fetchUserDetails } from '../services/authService'
 
 export default function LoginScreen({ navigation }) {
   const [identifier, setIdentifier] = useState({ value: '', error: '' });
   const [password, setPassword] = useState({ value: '', error: '' });
 
   const onLoginPressed = async () => {
-    console.log('Login button pressed'); // Debug log to ensure button works
-
     const identifierError = identifierValidator(identifier.value);
     const passwordError = passwordValidator(password.value);
-
+  
     if (identifierError || passwordError) {
       setIdentifier({ ...identifier, error: identifierError });
       setPassword({ ...password, error: passwordError });
       return;
     }
-
+  
     try {
-      const response = await fetch('http://192.168.0.25:8000/api/login/', {
-        method: 'POST',
+      const response = await fetch("http://172.20.10.5:8000/api/login/", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
+          "Content-Type": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify({
-          identifier: identifier.value, // Pass identifier (username or email)
+          identifier: identifier.value,
           password: password.value,
         }),
       });
-
+  
       if (response.ok) {
-        Alert.alert('Welcome Back!');
+        const responseData = await response.json();
+        const token = responseData.token;
+        
+        // Store token in AsyncStorage
+        await AsyncStorage.setItem("authToken", token);
+        
+        // Fetch user details (initials, full name, email)
+        const userDetails = await fetchUserDetails(token);
+
+        if (userDetails) {
+          // Store user details in AsyncStorage
+          await AsyncStorage.setItem("userInitials", userDetails.initials);
+          await AsyncStorage.setItem("userFullName", userDetails.fullName);
+          await AsyncStorage.setItem("userEmail", userDetails.email);
+        } else {
+          console.warn("User details not available.");
+          // Fallback to default values
+          await AsyncStorage.setItem("userInitials", "");
+          await AsyncStorage.setItem("userFullName", "");
+          await AsyncStorage.setItem("userEmail", "");
+        }
+
+        Alert.alert(`Welcome Back, ${userDetails.fullName}`);
         navigation.reset({
           index: 0,
-          routes: [{ name: 'DashboardScreen' }],
+          routes: [{ name: "DashboardScreen" }],
         });
       } else {
         const errorData = await response.json();
-        console.log('Error: ', errorData);
-        Alert.alert('Error', errorData.error || 'Login failed');
+        console.log("Error: ", errorData);
+        Alert.alert("Error", errorData.error || "Login failed");
       }
     } catch (error) {
-      Alert.alert('Error', 'An error occurred. Please try again.');
-      console.error('Fetch error:', error);
+      Alert.alert("Error", "An error occurred. Please try again.");
+      console.error("Fetch error:", error);
     }
   };
-
+  
   return (
     <Background>
       <BackButton goBack={navigation.goBack} />

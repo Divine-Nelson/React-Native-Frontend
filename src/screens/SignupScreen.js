@@ -40,7 +40,7 @@ export default function SignupScreen({ navigation }) {
     }
 
     try {
-      const response = await fetch('http://192.168.0.25:8000/api/signup/', {
+      const response = await fetch('http://100.76.75.42:8000/api/signup/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

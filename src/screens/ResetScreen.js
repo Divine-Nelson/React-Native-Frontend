@@ -21,7 +21,7 @@ export default function ResetScreen({ navigation }) {
       }
   
       try {
-        const response = await fetch('http://192.168.0.25:8000/api/reset_password/', {
+        const response = await fetch('http://192.168.0.75:8000/api/reset_password/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: email.value }),
